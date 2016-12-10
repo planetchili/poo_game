@@ -32,7 +32,7 @@ Game::Game( MainWindow& wnd )
 	goal( xDist( rng ),yDist( rng ) ),
 	meter( 20,20 )
 {
-	std::uniform_int_distribution<int> vDist( -1,1 );
+	std::uniform_real_distribution<float> vDist( -2.5f,2.5f );
 	for( int i = 0; i < nPoo; ++i )
 	{
 		poos[i].Init( xDist( rng ),yDist( rng ),vDist( rng ),vDist( rng ) );
