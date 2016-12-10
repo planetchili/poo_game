@@ -29,6 +29,7 @@
 #include "Meter.h"
 #include "SoundEffect.h"
 #include <random>
+#include "FrameTimer.h"
 
 class Game
 {
@@ -50,6 +51,7 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	FrameTimer ft;
 	std::random_device rd;
 	std::mt19937 rng;
 	std::uniform_real_distribution<float> xDist;
