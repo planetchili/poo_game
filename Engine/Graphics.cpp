@@ -243,9 +243,9 @@ Graphics::Graphics( HWNDKey& key )
 void Graphics::DrawCircle( int x,int y,int radius,Color c )
 {
 	const int rad_sq = radius * radius;
-	for( int y_loop = y - radius; y_loop < y + radius; y_loop++ )
+	for( int y_loop = y - radius; y_loop < y + radius + 1; y_loop++ )
 	{		
-		for( int x_loop = x - radius; x_loop < x + radius; x_loop++ )
+		for( int x_loop = x - radius; x_loop < x + radius + 1; x_loop++ )
 		{
 			const int x_diff = x - x_loop;
 			const int y_diff = y - y_loop;
