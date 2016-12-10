@@ -27,6 +27,7 @@
 #include "Dude.h"
 #include "Goal.h"
 #include "Meter.h"
+#include "SoundEffect.h"
 #include <random>
 
 class Game
@@ -60,5 +61,9 @@ private:
 	Poo poos[nPoo];
 	bool isStarted = false;
 	bool isGameOver = false;
+	SoundEffect pickup = SoundEffect( { L"Sounds\\coin.wav" } );
+	Sound title = Sound( L"Sounds\\title.wav" );
+	SoundEffect fart = SoundEffect( 
+		{ L"Sounds\\fart1.wav",L"Sounds\\fart2.wav" } );
 	/********************************/
 };
