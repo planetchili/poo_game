@@ -24,8 +24,6 @@
 #include "ChiliException.h"
 #include "Colors.h"
 
-#define CHILI_GFX_EXCEPTION( hr,note ) Graphics::Exception( hr,note,_CRT_WIDE(__FILE__),__LINE__ )
-
 class Graphics
 {
 public:
@@ -79,6 +77,6 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr unsigned int ScreenWidth = 800u;
-	static constexpr unsigned int ScreenHeight = 600u;
+	static constexpr int ScreenWidth = 800;
+	static constexpr int ScreenHeight = 600;
 };

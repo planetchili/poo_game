@@ -36,6 +36,8 @@ namespace FramebufferShaders
 
 #pragma comment( lib,"d3d11.lib" )
 
+#define CHILI_GFX_EXCEPTION( hr,note ) Graphics::Exception( hr,note,_CRT_WIDE(__FILE__),__LINE__ )
+
 using Microsoft::WRL::ComPtr;
 
 Graphics::Graphics( HWNDKey& key )
@@ -57,13 +59,10 @@ Graphics::Graphics( HWNDKey& key )
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
 
-	D3D_FEATURE_LEVEL	featureLevelsRequested = D3D_FEATURE_LEVEL_9_1;
-	UINT				numLevelsRequested = 1;
-	D3D_FEATURE_LEVEL	featureLevelsSupported;
 	HRESULT				hr;
 	UINT				createFlags = 0u;
+#ifdef CHILI_USE_D3D_DEBUG_LAYER
 #ifdef _DEBUG
-#ifdef USE_DIRECT3D_DEBUG_RUNTIME
 	createFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 #endif
@@ -74,13 +73,13 @@ Graphics::Graphics( HWNDKey& key )
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
 		createFlags,
-		&featureLevelsRequested,
-		numLevelsRequested,
+		nullptr,
+		0,
 		D3D11_SDK_VERSION,
 		&sd,
 		&pSwapChain,
 		&pDevice,
-		&featureLevelsSupported,
+		nullptr,
 		&pImmediateContext ) ) )
 	{
 		throw CHILI_GFX_EXCEPTION( hr,L"Creating device and swap chain" );
@@ -291,7 +290,14 @@ void Graphics::EndFrame()
 	// flip back/front buffers
 	if( FAILED( hr = pSwapChain->Present( 1u,0u ) ) )
 	{
-		throw CHILI_GFX_EXCEPTION( hr,L"Presenting back buffer" );
+		if( hr == DXGI_ERROR_DEVICE_REMOVED )
+		{
+			throw CHILI_GFX_EXCEPTION( pDevice->GetDeviceRemovedReason(),L"Presenting back buffer [device removed]" );
+		}
+		else
+		{
+			throw CHILI_GFX_EXCEPTION( hr,L"Presenting back buffer" );
+		}
 	}
 }
 
