@@ -369,6 +369,16 @@ void Dude::Update( const Keyboard& kbd,float dt )
 	pos += vel.GetNormalized() * speed * dt;
 }
 
+void Dude::Update( const Mouse& mouse,float dt )
+{
+	if( mouse.LeftIsPressed() )
+	{
+		const Vec2 center = pos + Vec2( float( width ) / 2.0f,float( height ) / 2.0f );
+		const Vec2 toPointer = Vec2( float( mouse.GetPosX() ),float( mouse.GetPosY() ) ) - center;
+		pos += toPointer.GetNormalized() * speed * dt;
+	}	
+}
+
 Vec2 Dude::GetPos() const
 {
 	return pos;
