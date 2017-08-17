@@ -19,10 +19,13 @@
 *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
 ******************************************************************************************/
 #pragma once
+#include "ChiliWin.h"
 #include <d3d11.h>
 #include <wrl.h>
 #include "ChiliException.h"
 #include "Colors.h"
+#include "Surface.h"
+#include "RectI.h"
 
 class Graphics
 {
@@ -56,6 +59,12 @@ public:
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
 	void PutPixel( int x,int y,Color c );
+	void DrawSpriteNonChroma( int x,int y,const Surface& s );
+	void DrawSpriteNonChroma( int x,int y,const RectI& srcRect,const Surface& s );
+	void DrawSpriteNonChroma( int x,int y,RectI srcRect,const RectI& clip,const Surface& s );
+	void DrawSprite( int x,int y,const Surface& s,Color chroma = Colors::Magenta );
+	void DrawSprite( int x,int y,const RectI& srcRect,const Surface& s,Color chroma = Colors::Magenta );
+	void DrawSprite( int x,int y,RectI srcRect,const RectI& clip,const Surface& s,Color chroma = Colors::Magenta );
 	void DrawRect( int x0,int y0,int x1,int y1,Color c );
 	void DrawRectDim( int x0,int y0,int width,int height,Color c )
 	{
@@ -80,4 +89,5 @@ private:
 public:
 	static constexpr int ScreenWidth = 800;
 	static constexpr int ScreenHeight = 600;
+	static RectI GetScreenRect();
 };

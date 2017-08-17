@@ -30,6 +30,8 @@
 #include "SoundEffect.h"
 #include <random>
 #include "FrameTimer.h"
+#include "Surface.h"
+#include <vector>
 
 class Game
 {
@@ -60,9 +62,12 @@ private:
 	Goal goal;
 	Meter meter;
 	static constexpr int nPoo = 10;
-	Poo poos[nPoo];
+	std::vector<Poo> poos;
 	bool isStarted = false;
 	bool isGameOver = false;
+	Surface titleScreen = Surface( "poo_images\\dapoopoo.bmp" );
+	Surface endScreen = Surface( "poo_images\\game_over.bmp" );
+	Surface pooSprite = Surface( "poo_images\\poo.bmp" );
 	SoundEffect pickup = SoundEffect( { L"Sounds\\coin.wav" } );
 	Sound title = Sound( L"Sounds\\title.wav" );
 	SoundEffect fart = SoundEffect( 

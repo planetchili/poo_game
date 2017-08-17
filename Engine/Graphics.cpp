@@ -240,23 +240,6 @@ Graphics::Graphics( HWNDKey& key )
 		_aligned_malloc( sizeof( Color ) * Graphics::ScreenWidth * Graphics::ScreenHeight,16u ) );
 }
 
-void Graphics::DrawCircle( int x,int y,int radius,Color c )
-{
-	const int rad_sq = radius * radius;
-	for( int y_loop = y - radius; y_loop < y + radius + 1; y_loop++ )
-	{		
-		for( int x_loop = x - radius; x_loop < x + radius + 1; x_loop++ )
-		{
-			const int x_diff = x - x_loop;
-			const int y_diff = y - y_loop;
-			if( x_diff * x_diff + y_diff * y_diff <= rad_sq )
-			{
-				PutPixel( x_loop,y_loop,c );
-			}
-		}
-	}
-}
-
 Graphics::~Graphics()
 {
 	// free sysbuffer memory (aligned free)
@@ -267,6 +250,11 @@ Graphics::~Graphics()
 	}
 	// clear the state of the device context before destruction
 	if( pImmediateContext ) pImmediateContext->ClearState();
+}
+
+RectI Graphics::GetScreenRect()
+{
+	return{ 0,ScreenWidth,0,ScreenHeight };
 }
 
 void Graphics::EndFrame()
@@ -331,6 +319,113 @@ void Graphics::PutPixel( int x,int y,Color c )
 	assert( y >= 0 );
 	assert( y < int( Graphics::ScreenHeight ) );
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
+}
+
+void Graphics::DrawSpriteNonChroma( int x,int y,const Surface& s )
+{
+	DrawSpriteNonChroma( x,y,s.GetRect(),s );
+}
+
+void Graphics::DrawSpriteNonChroma( int x,int y,const RectI& srcRect,const Surface& s )
+{
+	DrawSpriteNonChroma( x,y,srcRect,GetScreenRect(),s );
+}
+
+void Graphics::DrawSpriteNonChroma( int x,int y,RectI srcRect,const RectI& clip,const Surface& s )
+{
+	assert( srcRect.left >= 0 );
+	assert( srcRect.right <= s.GetWidth() );
+	assert( srcRect.top >= 0 );
+	assert( srcRect.bottom <= s.GetHeight() );
+	if( x < clip.left )
+	{
+		srcRect.left += clip.left - x;
+		x = clip.left;
+	}
+	if( y < clip.top )
+	{
+		srcRect.top += clip.top - y;
+		y = clip.top;
+	}
+	if( x + srcRect.GetWidth() > clip.right )
+	{
+		srcRect.right -= x + srcRect.GetWidth() - clip.right;
+	}
+	if( y + srcRect.GetHeight() > clip.bottom )
+	{
+		srcRect.bottom -= y + srcRect.GetHeight() - clip.bottom;
+	}
+	for( int sy = srcRect.top; sy < srcRect.bottom; sy++ )
+	{
+		for( int sx = srcRect.left; sx < srcRect.right; sx++ )
+		{
+			PutPixel( x + sx - srcRect.left,y + sy - srcRect.top,s.GetPixel( sx,sy ) );
+		}
+	}
+}
+
+void Graphics::DrawSprite( int x,int y,const Surface & s,Color chroma )
+{
+	DrawSprite( x,y,s.GetRect(),s,chroma );
+}
+
+void Graphics::DrawSprite( int x,int y,const RectI & srcRect,const Surface & s,Color chroma )
+{
+	DrawSprite( x,y,srcRect,GetScreenRect(),s,chroma );
+}
+
+void Graphics::DrawSprite( int x,int y,RectI srcRect,const RectI& clip,const Surface& s,Color chroma )
+{
+	assert( srcRect.left >= 0 );
+	assert( srcRect.right <= s.GetWidth() );
+	assert( srcRect.top >= 0 );
+	assert( srcRect.bottom <= s.GetHeight() );
+	if( x < clip.left )
+	{
+		srcRect.left += clip.left - x;
+		x = clip.left;
+	}
+	if( y < clip.top )
+	{
+		srcRect.top += clip.top - y;
+		y = clip.top;
+	}
+	if( x + srcRect.GetWidth() > clip.right )
+	{
+		srcRect.right -= x + srcRect.GetWidth() - clip.right;
+	}
+	if( y + srcRect.GetHeight() > clip.bottom )
+	{
+		srcRect.bottom -= y + srcRect.GetHeight() - clip.bottom;
+	}
+	for( int sy = srcRect.top; sy < srcRect.bottom; sy++ )
+	{
+		for( int sx = srcRect.left; sx < srcRect.right; sx++ )
+		{
+			const Color srcPixel = s.GetPixel( sx,sy );
+			if( srcPixel != chroma )
+			{
+				PutPixel( x + sx - srcRect.left,y + sy - srcRect.top,srcPixel );
+			}
+		}
+	}
+}
+
+void Graphics::DrawCircle( int x,int y,int radius,Color c )
+{
+	const int rad_sq = radius * radius;
+	for( int y_loop = y - radius; y_loop < y + radius + 1; y_loop++ )
+	{
+		for( int x_loop = x - radius; x_loop < x + radius + 1; x_loop++ )
+		{
+			const int x_diff = x - x_loop;
+			const int y_diff = y - y_loop;
+			if( x_diff * x_diff + y_diff * y_diff <= rad_sq )
+			{
+				PutPixel( x_loop,y_loop,c );
+			}
+		}
+	}
 }
 
 void Graphics::DrawRect( int x0,int y0,int x1,int y1,Color c )
